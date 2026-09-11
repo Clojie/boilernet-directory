@@ -379,35 +379,35 @@
   <p class="count" id="count"></p>
 
   <div class="roster" id="roster"></div>
-  <p class="empty" id="empty">No one hiring in this domain yet. Try another filter.</p>
+  <p class="empty" id="empty">No one hiring in this domain yet :(. Try another filter.</p>
 </div>
 
 <script>
   const mentors = [
     {
       name: "Mara Ilić",
-      company: "Senior Engineer, Duolingo",
+      company: "Co-founder & CTO, Stackrift",
       domain: "Engineering",
-      help: "Six years in backend engineering, most recently leading infra at Duolingo.",
-      lookingFor: "Backend engineering interns for summer 2027.",
+      help: "Building Stackrift, a developer platform that auto-scales backend infrastructure based on real-time traffic patterns. Quit her job at Duolingo after six years to go full-time on it.",
+      lookingFor: "Backend engineers who want equity and a seat at the table from day one.",
       photo: "https://i.pravatar.cc/100?img=12",
       available: true
     },
     {
       name: "Devon Cole",
-      company: "Product Lead, Stripe",
+      company: "Founder & CEO, Loopback",
       domain: "Product",
-      help: "A decade in product roles, currently leading a team at Stripe.",
-      lookingFor: "Early PM hires with a technical background.",
+      help: "Started Loopback after a decade in product roles — it's a B2B tool that turns customer support tickets into structured product feedback automatically. Pre-seed, two paying design partners.",
+      lookingFor: "An early PM or growth hire with a technical background who wants to define what product means at a 4-person startup.",
       photo: "https://i.pravatar.cc/100?img=33",
       available: true
     },
     {
       name: "Priya Raman",
-      company: "Data Scientist, Two Sigma",
+      company: "Co-founder, Veridian AI",
       domain: "Data & AI",
-      help: "Data scientist at Two Sigma, previously an ML engineer at a seed-stage startup.",
-      lookingFor: "ML engineers with a research background.",
+      help: "Co-founded Veridian AI to bring explainability tooling to financial ML models — think audit trails for every prediction. Previously an ML engineer at Two Sigma.",
+      lookingFor: "ML engineers with a research background comfortable working on interpretability problems.",
       photo: "https://i.pravatar.cc/100?img=45",
       available: false
     },
@@ -415,33 +415,33 @@
       name: "Theo Marsh",
       company: "Founder, Rundown Robotics",
       domain: "Hardware",
-      help: "Left Purdue in 2019 to start Rundown Robotics; raised a seed round the following year.",
-      lookingFor: "A founding engineer with hardware experience.",
+      help: "Left Purdue in 2019 to start Rundown Robotics, building autonomous inspection drones for industrial facilities. Raised a seed round in 2020 and is gearing up for Series A.",
+      lookingFor: "A founding engineer with hardware and embedded systems experience.",
       photo: "https://i.pravatar.cc/100?img=52",
       available: true
     },
     {
       name: "Naomi Fischer",
-      company: "Brand Designer, Notion",
+      company: "Co-founder & CPO, Hue Studio",
       domain: "Design",
-      help: "Started out freelancing, now on the brand design team at Notion.",
-      lookingFor: "Product designers, contract or full-time.",
+      help: "Co-founded Hue Studio, a design system SaaS that keeps brand tokens in sync across Figma, code, and marketing assets in real time. Started the company after years of freelancing and a stint on the brand team at Notion.",
+      lookingFor: "Product designers who want to shape the product from scratch, contract or full-time.",
       photo: "https://i.pravatar.cc/100?img=47",
       available: false
     },
     {
       name: "Jalen Brooks",
-      company: "Finance Associate, Blackstone",
+      company: "Founder & CEO, Claro Finance",
       domain: "Finance",
-      help: "Recruited into Blackstone straight out of Purdue's finance program.",
-      lookingFor: "Analysts for the 2027 recruiting class.",
+      help: "Launched Claro Finance after three years at Blackstone to bring institutional-grade cash flow forecasting to small businesses. Currently in YC W27 and closing his first revenue deals.",
+      lookingFor: "Analysts or finance-savvy operators who want to join at the ground floor.",
       photo: "https://i.pravatar.cc/100?img=68",
       available: true
     }
   ];
 
   const domains = ["All", ...new Set(mentors.map(m => m.domain))];
-  const availabilityOptions = ["All", "Hiring", "Not hiring"];
+  const availabilityOptions = ["All", "Available", "Not available"];
   const filterBarEl = document.getElementById("filterBar");
   const rosterEl = document.getElementById("roster");
   const countEl = document.getElementById("count");
@@ -452,8 +452,8 @@
   let openDropdown = null;
 
   function statusDotHtml(option) {
-    if (option === "Hiring") return `<span class="status-dot available"></span>`;
-    if (option === "Not hiring") return `<span class="status-dot unavailable"></span>`;
+    if (option === "Available") return `<span class="status-dot available"></span>`;
+    if (option === "Not Available") return `<span class="status-dot unavailable"></span>`;
     return "";
   }
 
@@ -517,8 +517,8 @@
       const domainMatch = active === "All" || m.domain === active;
       const availabilityMatch =
         activeAvailability === "All" ||
-        (activeAvailability === "Hiring" && m.available) ||
-        (activeAvailability === "Not hiring" && !m.available);
+        (activeAvailability === "Available" && m.available) ||
+        (activeAvailability === "Not Available" && !m.available);
       return domainMatch && availabilityMatch;
     });
 
@@ -526,7 +526,7 @@
       const card = document.createElement("div");
       card.className = "mentor";
       const statusClass = m.available ? "available" : "unavailable";
-      const statusLabel = m.available ? "Hiring" : "Not hiring";
+      const statusLabel = m.available ? "Available" : "Not Available";
       card.innerHTML = `
         <span class="mentor-domain">${m.domain}</span>
         <div class="mentor-top">
