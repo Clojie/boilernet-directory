@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BoilerNet — Alumni Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1A1815;
+    --row-alt: #221F1B;
+    --gold: #C9A24B;
+    --ink: #EDE6D8;
+    --ink-dim: #A9A29A;
+    --teal: #6FA9A0;
+    --line: #38332C;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-font-smoothing: antialiased; }
+
+  body {
+    margin: 0;
+    background: var(--navy);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+  }
+
+  .topnav {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .topnav-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 12px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .brand-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+
+  .topnav-tag {
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  header {
+    margin-bottom: 40px;
+  }
+
+  .kicker {
+    font-size: 13px;
+    color: var(--teal);
+    letter-spacing: 0.02em;
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: clamp(30px, 6vw, 40px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    color: var(--ink);
+  }
+
+  .lede {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 52ch;
+    margin: 0 0 20px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+  }
+
+  .header-stats b {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin: 44px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-toggle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.15s ease;
+  }
+
+  .dropdown-toggle:hover,
+  .dropdown.open .dropdown-toggle {
+    border-color: var(--gold);
+  }
+
+  .dropdown-toggle .arrow {
+    font-size: 9px;
+    color: var(--ink-dim);
+    transition: transform 0.15s ease;
+  }
+
+  .dropdown.open .dropdown-toggle .arrow {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-toggle .value {
+    color: var(--gold);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 170px;
+    background: var(--row-alt);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 20;
+    display: none;
+  }
+
+  .dropdown.open .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-item {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    padding: 8px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--ink);
+  }
+
+  .dropdown-item.active {
+    color: var(--gold);
+  }
+
+  .count {
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    margin: 4px 0 0;
+  }
+
+  .roster {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .mentor {
+    position: relative;
+    background: var(--row-alt);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px;
+    transition: border-color 0.15s ease;
+  }
+
+  .mentor:hover {
+    border-color: var(--gold);
+  }
+
+  .mentor.hidden {
+    display: none;
+  }
+
+  .mentor-domain {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--teal);
+    border: 1px solid rgba(111, 169, 160, 0.4);
+    border-radius: 3px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  .mentor-top {
+    display: flex;
+    gap: 14px;
+    padding-right: 78px;
+  }
+
+  .mentor-photo {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .mentor-id {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .mentor-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .mentor-company {
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mentor-status {
+    font-size: 11.5px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .status-dot.available { background: var(--teal); }
+  .status-dot.unavailable { background: #C9645A; }
+
+  .mentor-help {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-dim);
+    margin: 16px 0 18px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+
+  .mentor-looking {
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin: 0 0 16px;
+  }
+
+  .mentor-looking b {
+    color: var(--teal);
+    font-weight: 500;
+  }
+
+  .mentor-connect {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    background: transparent;
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .mentor-connect:hover {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .empty {
+    padding: 40px 0;
+    font-size: 13.5px;
+    color: var(--ink-dim);
+    display: none;
+  }
+
+  footer {
+    margin-top: 56px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dropdown-toggle, .arrow, .mentor { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">Boilernet / Directory</p>
+    <h1>Mentor Directory</h1>
+    <p class="lede">Find Purdue founders looking to hire</p>
+    <div class="header-stats" id="headerStats"></div>
+  </header>
+
+  <div class="filter-bar" id="filterBar"></div>
+  <p class="count" id="count"></p>
+
+  <div class="roster" id="roster"></div>
+  <p class="empty" id="empty">No one hiring in this domain yet. Try another filter.</p>
+</div>
+
+<script>
+  const mentors = [
+    {
+      name: "Mara Ilić",
+      company: "Senior Engineer, Duolingo",
+      domain: "Engineering",
+      help: "Six years in backend engineering, most recently leading infra at Duolingo.",
+      lookingFor: "Backend engineering interns for summer 2027.",
+      photo: "https://i.pravatar.cc/100?img=12",
+      available: true
+    },
+    {
+      name: "Devon Cole",
+      company: "Product Lead, Stripe",
+      domain: "Product",
+      help: "A decade in product roles, currently leading a team at Stripe.",
+      lookingFor: "Early PM hires with a technical background.",
+      photo: "https://i.pravatar.cc/100?img=33",
+      available: true
+    },
+    {
+      name: "Priya Raman",
+      company: "Data Scientist, Two Sigma",
+      domain: "Data & AI",
+      help: "Data scientist at Two Sigma, previously an ML engineer at a seed-stage startup.",
+      lookingFor: "ML engineers with a research background.",
+      photo: "https://i.pravatar.cc/100?img=45",
+      available: false
+    },
+    {
+      name: "Theo Marsh",
+      company: "Founder, Rundown Robotics",
+      domain: "Hardware",
+      help: "Left Purdue in 2019 to start Rundown Robotics; raised a seed round the following year.",
+      lookingFor: "A founding engineer with hardware experience.",
+      photo: "https://i.pravatar.cc/100?img=52",
+      available: true
+    },
+    {
+      name: "Naomi Fischer",
+      company: "Brand Designer, Notion",
+      domain: "Design",
+      help: "Started out freelancing, now on the brand design team at Notion.",
+      lookingFor: "Product designers, contract or full-time.",
+      photo: "https://i.pravatar.cc/100?img=47",
+      available: false
+    },
+    {
+      name: "Jalen Brooks",
+      company: "Finance Associate, Blackstone",
+      domain: "Finance",
+      help: "Recruited into Blackstone straight out of Purdue's finance program.",
+      lookingFor: "Analysts for the 2027 recruiting class.",
+      photo: "https://i.pravatar.cc/100?img=68",
+      available: true
+    }
+  ];
+
+  const domains = ["All", ...new Set(mentors.map(m => m.domain))];
+  const availabilityOptions = ["All", "Hiring", "Not hiring"];
+  const filterBarEl = document.getElementById("filterBar");
+  const rosterEl = document.getElementById("roster");
+  const countEl = document.getElementById("count");
+  const emptyEl = document.getElementById("empty");
+  const headerStatsEl = document.getElementById("headerStats");
+  let active = "All";
+  let activeAvailability = "All";
+  let openDropdown = null;
+
+  function statusDotHtml(option) {
+    if (option === "Hiring") return `<span class="status-dot available"></span>`;
+    if (option === "Not hiring") return `<span class="status-dot unavailable"></span>`;
+    return "";
+  }
+
+  function renderFilterBar() {
+    filterBarEl.innerHTML = "";
+
+    const groups = [
+      { key: "domain", label: "Domain", options: domains, value: active },
+      { key: "availability", label: "Availability", options: availabilityOptions, value: activeAvailability }
+    ];
+
+    groups.forEach(group => {
+      const wrap = document.createElement("div");
+      wrap.className = "dropdown" + (openDropdown === group.key ? " open" : "");
+
+      const toggle = document.createElement("button");
+      toggle.className = "dropdown-toggle";
+      toggle.innerHTML = `${group.label}: <span class="value">${group.value}</span><span class="arrow">▾</span>`;
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openDropdown = openDropdown === group.key ? null : group.key;
+        renderFilterBar();
+      });
+
+      const menu = document.createElement("div");
+      menu.className = "dropdown-menu";
+      group.options.forEach(option => {
+        const item = document.createElement("div");
+        item.className = "dropdown-item" + (option === group.value ? " active" : "");
+        item.innerHTML = `${statusDotHtml(option)}${option}`;
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (group.key === "domain") {
+            active = option;
+          } else {
+            activeAvailability = option;
+          }
+          openDropdown = null;
+          renderFilterBar();
+          renderRoster();
+        });
+        menu.appendChild(item);
+      });
+
+      wrap.appendChild(toggle);
+      wrap.appendChild(menu);
+      filterBarEl.appendChild(wrap);
+    });
+  }
+
+  document.addEventListener("click", () => {
+    if (openDropdown !== null) {
+      openDropdown = null;
+      renderFilterBar();
+    }
+  });
+
+  function renderRoster() {
+    rosterEl.innerHTML = "";
+    const visible = mentors.filter(m => {
+      const domainMatch = active === "All" || m.domain === active;
+      const availabilityMatch =
+        activeAvailability === "All" ||
+        (activeAvailability === "Hiring" && m.available) ||
+        (activeAvailability === "Not hiring" && !m.available);
+      return domainMatch && availabilityMatch;
+    });
+
+    visible.forEach(m => {
+      const card = document.createElement("div");
+      card.className = "mentor";
+      const statusClass = m.available ? "available" : "unavailable";
+      const statusLabel = m.available ? "Hiring" : "Not hiring";
+      card.innerHTML = `
+        <span class="mentor-domain">${m.domain}</span>
+        <div class="mentor-top">
+          <img class="mentor-photo" src="${m.photo}" alt="" loading="lazy">
+          <div class="mentor-id">
+            <span class="mentor-name">${m.name}</span>
+            <p class="mentor-company">${m.company}</p>
+            <span class="mentor-status"><span class="status-dot ${statusClass}"></span>${statusLabel}</span>
+          </div>
+        </div>
+        <p class="mentor-help">${m.help}</p>
+        <p class="mentor-looking"><b>Looking for:</b> ${m.lookingFor}</p>
+        <button class="mentor-connect">Connect</button>
+      `;
+      rosterEl.appendChild(card);
+    });
+
+    emptyEl.style.display = visible.length === 0 ? "block" : "none";
+    countEl.textContent = `${visible.length} result${visible.length === 1 ? "" : "s"}${active !== "All" ? " in " + active : ""}`;
+  }
+
+  renderFilterBar();
+  renderRoster();
+</script>
+
+</body>
+</html>
